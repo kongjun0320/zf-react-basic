@@ -7,14 +7,24 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 // 2、函数必须以大写字母开头，因为在内部是通过大小写判断是自定义组件还是默认组件 div、span
 // 3、函数组件在使用前必须先定义
 // 4、函数组件能且只能返回一个根元素
-function FunctionComponent(props) {
-  return (
-    <div className="title" style={{ color: 'red' }}>
-      <span>{props.title}</span>
-    </div>
-  );
+// function FunctionComponent(props) {
+//   return (
+//     <div className="title" style={{ color: 'red' }}>
+//       <span>{props.title}</span>
+//     </div>
+//   );
+// }
+
+class ClassComponent extends React.Component {
+  render() {
+    return (
+      <div className="title" style={{ color: 'red' }}>
+        <span>{this.props.title}</span>
+      </div>
+    );
+  }
 }
 
-console.log('FunctionComponent >>> ', FunctionComponent);
-// React.createElement(FunctionComponent, { title: "world" });
-root.render(<FunctionComponent title="world" />);
+console.log('ClassComponent >>> ', ClassComponent);
+// React.createElement(ClassComponent, { title: "world" });
+root.render(<ClassComponent title="world" />);
