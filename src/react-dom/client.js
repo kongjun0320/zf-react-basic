@@ -10,7 +10,10 @@ function createDOM(vDom) {
   let dom;
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props);
+  } else if (typeof type === 'function') {
+    return mountFunctionComponent(vDom);
   } else {
+    // 原生组件
     dom = document.createElement(type);
   }
   if (typeof props === 'object') {
@@ -32,6 +35,12 @@ function reconcileChildren(childrenVDom, parentDOM) {
   for (let i = 0; i < childrenVDom.length; i++) {
     mount(childrenVDom[i], parentDOM);
   }
+}
+
+function mountFunctionComponent(vDom) {
+  const { type, props } = vDom;
+  const renderVDom = type(props);
+  return createDOM(renderVDom);
 }
 
 /**
