@@ -8,9 +8,16 @@ import { wrapToVDom } from './utils';
  * @param {*} children 后面所有的参数都是 children，children 有可能有、也可能没有、可能有一个、也可能有多个
  */
 function createElement(type, config, children) {
+  let ref, key;
   if (config) {
     delete config.__source;
     delete config.__self;
+    // 用来引用此元素的
+    ref = config.ref;
+    delete config.ref;
+    // 用来标记一个父亲的唯一儿子的
+    key = config.key;
+    delete config.key;
   }
   let props = { ...config };
   // 如果参数数量大于 3 ，说明有儿子，并且儿子的数量大于 1 个
@@ -25,6 +32,8 @@ function createElement(type, config, children) {
     $$typeof: REACT_ELEMENT,
     type,
     props,
+    ref,
+    key,
   };
 }
 
