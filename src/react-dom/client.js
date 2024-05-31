@@ -32,6 +32,8 @@ function createDOM(vDom) {
       }
     }
   }
+  // 根据虚拟 DOM 创建真实 DOM，成功后，就可以建立关联
+  vDom.trueDom = dom;
   return dom;
 }
 
@@ -44,6 +46,8 @@ function reconcileChildren(childrenVDom, parentDOM) {
 function mountFunctionComponent(vDom) {
   const { type: FunctionComponent, props } = vDom;
   const renderVDom = FunctionComponent(props);
+  // 暂存
+  vDom.oldRenderVDom = renderVDom;
   return createDOM(renderVDom);
 }
 
@@ -51,6 +55,8 @@ function mountClassComponent(vDom) {
   const { type: ClassComponent, props } = vDom;
   const classInstance = new ClassComponent(props);
   const renderVDom = classInstance.render();
+  // 在获取 render 的渲染结果后把此结果放到 classInstance.oldRenderVDom 上进行暂存
+  classInstance.oldRenderVDom = renderVDom;
   return createDOM(renderVDom);
 }
 
@@ -69,6 +75,8 @@ function updateProps(dom, oldProps = {}, newProps = {}) {
       for (const attr in style) {
         dom.style[attr] = style[attr];
       }
+    } else if (/^on[A-Z].*/.test(key)) {
+      dom[key.toLowerCase()] = newProps[key];
     } else {
       dom[key] = newProps[key];
     }
@@ -80,6 +88,17 @@ function updateProps(dom, oldProps = {}, newProps = {}) {
       }
     }
   }
+}
+
+export function findDOM(vDom) {
+  if (!vDom) return null;
+  return vDom.trueDom;
+}
+
+export function compareTwoVDom(parentDOM, oldVDom, newVDom) {
+  let oldDOM = findDOM(oldVDom);
+  let newDOM = createDOM(newVDom);
+  parentDOM.replaceChild(newDOM, oldDOM);
 }
 
 class DOMRoot {
