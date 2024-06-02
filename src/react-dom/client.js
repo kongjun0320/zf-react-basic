@@ -1,4 +1,4 @@
-import { REACT_TEXT } from '../constant';
+import { REACT_FORWARD_REF, REACT_TEXT } from '../constant';
 import { addEvent } from './event';
 
 function mount(vDom, container) {
@@ -9,7 +9,9 @@ function mount(vDom, container) {
 function createDOM(vDom) {
   const { type, props, ref } = vDom;
   let dom;
-  if (type === REACT_TEXT) {
+  if (type && type.$$typeof === REACT_FORWARD_REF) {
+    return mountForwardComponent(vDom);
+  } else if (type === REACT_TEXT) {
     dom = document.createTextNode(props);
   } else if (typeof type === 'function') {
     if (type.isReactComponent) {
@@ -46,6 +48,15 @@ function reconcileChildren(childrenVDom, parentDOM) {
   for (let i = 0; i < childrenVDom.length; i++) {
     mount(childrenVDom[i], parentDOM);
   }
+}
+
+function mountForwardComponent(vDom) {
+  const { type, props, ref } = vDom;
+  // type.render 就是 forward 函数组件
+  const renderVDom = type.render(props, ref);
+  // 暂存
+  vDom.oldRenderVDom = renderVDom;
+  return createDOM(renderVDom);
 }
 
 function mountFunctionComponent(vDom) {

@@ -127,7 +127,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 // React.createElement(ClassComponent, { title: "world" });
 // const element = <Sum />;
 
-class TextInput extends React.Component {
+function TextInput(props, forwardRef) {
+  return <input type="text" ref={forwardRef} />;
+}
+
+const ForwardTextInput = React.forwardRef(TextInput);
+
+class Form extends React.Component {
   constructor(props) {
     super(props);
 
@@ -139,30 +145,20 @@ class TextInput extends React.Component {
   };
 
   render() {
-    return <input type="text" ref={this.ref} />;
-  }
-}
-
-class Form extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.ref = React.createRef();
-  }
-
-  getFocus = () => {
-    this.ref.current.getFocus();
-  };
-
-  render() {
     return (
       <div>
-        <TextInput ref={this.ref} />
+        <ForwardTextInput ref={this.ref} />
         <button onClick={this.getFocus}>获得焦点</button>
       </div>
     );
   }
 }
+
+/*
+React.createElement(ForwardTextInput, {
+  ref: this.ref
+});
+*/
 
 const element = <Form />;
 root.render(element);
