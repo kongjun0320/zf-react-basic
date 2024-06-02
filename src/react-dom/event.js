@@ -68,6 +68,10 @@ function dispatchEvent(event, isCapture) {
       const { store } = _currentTarget;
       const handler = store && store[eventType];
       handler && handler(syntheticEvent);
+      // 阻止冒泡了
+      if (syntheticEvent.isPropagationStopped) {
+        break;
+      }
     }
   }
   // 第一个先获取当前的事件源 document
@@ -103,13 +107,15 @@ function createSyntheticEvent(nativeEvent) {
   // 是否已经阻止冒泡
   syntheticEvent.isPropagationStopped = false;
   syntheticEvent.stopPropagation = stopPropagation;
+
+  return syntheticEvent;
 }
 
 function preventDefault() {
   this.isDefaultPrevented = true;
   const nativeEvent = this.nativeEvent;
   if (nativeEvent.preventDefault) {
-    navigator.preventDefault();
+    nativeEvent.preventDefault();
   } else {
     nativeEvent.returnValue = false;
   }
@@ -118,8 +124,8 @@ function preventDefault() {
 function stopPropagation() {
   this.isPropagationStopped = true;
   const nativeEvent = this.nativeEvent;
-  if (nativeEvent.preventDefault) {
-    navigator.stopPropagation();
+  if (nativeEvent.stopPropagation) {
+    nativeEvent.stopPropagation();
   } else {
     nativeEvent.cancelBubble = true;
   }

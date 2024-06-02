@@ -69,7 +69,8 @@ class ClassComponent extends React.Component {
     // });
   };
 
-  clickBtn = () => {
+  clickBtn = (event) => {
+    event.stopPropagation();
     console.log('clickBtn');
   };
 
@@ -77,26 +78,20 @@ class ClassComponent extends React.Component {
     console.log('clickDiv');
   };
 
-  clickBtnCapture = () => {
-    console.log('clickBtnCapture');
-  };
+  // clickBtnCapture = () => {
+  //   console.log('clickBtnCapture');
+  // };
 
-  clickDivCapture = () => {
-    console.log('clickDivCapture');
-  };
+  // clickDivCapture = () => {
+  //   console.log('clickDivCapture');
+  // };
 
   render() {
     return (
-      <div
-        id="counter"
-        onClick={this.clickDiv}
-        onClickCapture={this.clickDivCapture}
-      >
+      <div id="counter" onClick={this.clickDiv}>
         <p>number: {this.state.number}</p>
         {/* <p>age: {this.state.age}</p> */}
-        <button onClick={this.clickBtn} onClickCapture={this.clickBtnCapture}>
-          +
-        </button>
+        <button onClick={this.clickBtn}>+</button>
       </div>
     );
   }
