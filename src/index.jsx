@@ -97,33 +97,72 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 //   }
 // }
 
-class Sum extends React.Component {
+// class Sum extends React.Component {
+//   constructor(props) {
+//     super(props);
+
+//     this.a = React.createRef();
+//     this.b = React.createRef();
+//     this.c = React.createRef();
+//   }
+
+//   add = () => {
+//     this.c.current.value = this.a.current.value * 1 + this.b.current.value * 1;
+//   };
+
+//   render() {
+//     return (
+//       <div>
+//         <input type="text" ref={this.a} />
+//         <span>+</span>
+//         <input type="text" ref={this.b} />
+//         <button onClick={this.add}>=</button>
+//         <input type="text" ref={this.c} />
+//       </div>
+//     );
+//   }
+// }
+
+// console.log('ClassComponent >>> ', ClassComponent);
+// React.createElement(ClassComponent, { title: "world" });
+// const element = <Sum />;
+
+class TextInput extends React.Component {
   constructor(props) {
     super(props);
 
-    this.a = React.createRef();
-    this.b = React.createRef();
-    this.c = React.createRef();
+    this.ref = React.createRef();
   }
 
-  add = () => {
-    this.c.current.value = this.a.current.value * 1 + this.b.current.value * 1;
+  getFocus = () => {
+    this.ref.current.focus();
+  };
+
+  render() {
+    return <input type="text" ref={this.ref} />;
+  }
+}
+
+class Form extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.ref = React.createRef();
+  }
+
+  getFocus = () => {
+    this.ref.current.getFocus();
   };
 
   render() {
     return (
       <div>
-        <input type="text" ref={this.a} />
-        <span>+</span>
-        <input type="text" ref={this.b} />
-        <button onClick={this.add}>=</button>
-        <input type="text" ref={this.c} />
+        <TextInput ref={this.ref} />
+        <button onClick={this.getFocus}>获得焦点</button>
       </div>
     );
   }
 }
 
-// console.log('ClassComponent >>> ', ClassComponent);
-// React.createElement(ClassComponent, { title: "world" });
-const element = <Sum />;
+const element = <Form />;
 root.render(element);

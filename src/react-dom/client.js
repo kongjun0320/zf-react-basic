@@ -57,8 +57,11 @@ function mountFunctionComponent(vDom) {
 }
 
 function mountClassComponent(vDom) {
-  const { type: ClassComponent, props } = vDom;
+  const { type: ClassComponent, props, ref } = vDom;
   const classInstance = new ClassComponent(props);
+  if (ref) {
+    ref.current = classInstance;
+  }
   const renderVDom = classInstance.render();
   // 在获取 render 的渲染结果后把此结果放到 classInstance.oldRenderVDom 上进行暂存
   classInstance.oldRenderVDom = renderVDom;
