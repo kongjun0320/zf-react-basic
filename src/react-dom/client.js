@@ -1,4 +1,5 @@
 import { REACT_TEXT } from '../constant';
+import { addEvent } from './event';
 
 function mount(vDom, container) {
   const newDOM = createDOM(vDom);
@@ -76,7 +77,8 @@ function updateProps(dom, oldProps = {}, newProps = {}) {
         dom.style[attr] = style[attr];
       }
     } else if (/^on[A-Z].*/.test(key)) {
-      dom[key.toLowerCase()] = newProps[key];
+      // dom[key.toLowerCase()] = newProps[key];
+      addEvent(dom, key, newProps[key]);
     } else {
       dom[key] = newProps[key];
     }

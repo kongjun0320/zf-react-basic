@@ -11,6 +11,8 @@ export let updateQueue = {
   //
   batchUpdate() {
     // console.log('batchUpdate >>> ');
+    updateQueue.isBatchingUpdate = false;
+
     for (const updater of updateQueue.updaters) {
       updater.updateComponent();
     }

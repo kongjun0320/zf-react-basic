@@ -1,6 +1,6 @@
 import React from './react';
 import ReactDOM from './react-dom/client';
-import { updateQueue } from './Component';
+// import { updateQueue } from './Component';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -26,7 +26,7 @@ class ClassComponent extends React.Component {
 
   handleClick = () => {
     // 在进入事件回调前先把批量更新打开
-    updateQueue.isBatchingUpdate = true;
+    // updateQueue.isBatchingUpdate = true;
     // debugger
     this.setState({
       number: this.state.number + 1,
@@ -49,8 +49,8 @@ class ClassComponent extends React.Component {
     }, 1000);
     // debugger
     // 在函数结束后，把批量更新关掉
-    updateQueue.isBatchingUpdate = false;
-    updateQueue.batchUpdate();
+    // updateQueue.isBatchingUpdate = false;
+    // updateQueue.batchUpdate();
     // 除构造函数外不能直接修改 this.state，需要通过 setState 来修改状态
     // 因为 setState 有一个副作用，就是修改完状态后会让组件重新刷新
     // this.setState(
@@ -69,12 +69,34 @@ class ClassComponent extends React.Component {
     // });
   };
 
+  clickBtn = () => {
+    console.log('clickBtn');
+  };
+
+  clickDiv = () => {
+    console.log('clickDiv');
+  };
+
+  clickBtnCapture = () => {
+    console.log('clickBtnCapture');
+  };
+
+  clickDivCapture = () => {
+    console.log('clickDivCapture');
+  };
+
   render() {
     return (
-      <div id="counter">
+      <div
+        id="counter"
+        onClick={this.clickDiv}
+        onClickCapture={this.clickDivCapture}
+      >
         <p>number: {this.state.number}</p>
         {/* <p>age: {this.state.age}</p> */}
-        <button onClick={this.handleClick}>+</button>
+        <button onClick={this.clickBtn} onClickCapture={this.clickBtnCapture}>
+          +
+        </button>
       </div>
     );
   }
