@@ -7,7 +7,7 @@ function mount(vDom, container) {
 }
 
 function createDOM(vDom) {
-  const { type, props } = vDom;
+  const { type, props, ref } = vDom;
   let dom;
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props);
@@ -35,6 +35,10 @@ function createDOM(vDom) {
   }
   // 根据虚拟 DOM 创建真实 DOM，成功后，就可以建立关联
   vDom.trueDom = dom;
+  // 如果此虚拟 DOM 上有 ref 属性，则把 ref.current 的值赋真实 DOM
+  if (ref) {
+    ref.current = dom;
+  }
   return dom;
 }
 
