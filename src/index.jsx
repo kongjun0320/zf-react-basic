@@ -1,5 +1,5 @@
-import React from './react';
-import ReactDOM from './react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 // import { updateQueue } from './Component';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -127,32 +127,32 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 // React.createElement(ClassComponent, { title: "world" });
 // const element = <Sum />;
 
-function TextInput(props, forwardRef) {
-  return <input type="text" ref={forwardRef} />;
-}
+// function TextInput(props, forwardRef) {
+//   return <input type="text" ref={forwardRef} />;
+// }
 
-const ForwardTextInput = React.forwardRef(TextInput);
+// const ForwardTextInput = React.forwardRef(TextInput);
 
-class Form extends React.Component {
-  constructor(props) {
-    super(props);
+// class Form extends React.Component {
+//   constructor(props) {
+//     super(props);
 
-    this.ref = React.createRef();
-  }
+//     this.ref = React.createRef();
+//   }
 
-  getFocus = () => {
-    this.ref.current.focus();
-  };
+//   getFocus = () => {
+//     this.ref.current.focus();
+//   };
 
-  render() {
-    return (
-      <div>
-        <ForwardTextInput ref={this.ref} />
-        <button onClick={this.getFocus}>获得焦点</button>
-      </div>
-    );
-  }
-}
+//   render() {
+//     return (
+//       <div>
+//         <ForwardTextInput ref={this.ref} />
+//         <button onClick={this.getFocus}>获得焦点</button>
+//       </div>
+//     );
+//   }
+// }
 
 /*
 React.createElement(ForwardTextInput, {
@@ -160,5 +160,84 @@ React.createElement(ForwardTextInput, {
 });
 */
 
-const element = <Form />;
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      number: 0,
+    };
+
+    console.log('Counter >>> constructor');
+  }
+
+  handleClick = () => {
+    this.setState({
+      number: this.state.number + 1,
+    });
+  };
+
+  UNSAFE_componentWillMount() {
+    console.log('Counter >>> componentWillMount');
+  }
+  render() {
+    console.log('Counter >>> render');
+    return (
+      <div>
+        <p>number: {this.state.number}</p>
+        {this.state.number === 4 ? null : (
+          <ChildCounter count={this.state.number} />
+        )}
+        <button onClick={this.handleClick}>+</button>
+      </div>
+    );
+  }
+
+  componentDidMount() {
+    console.log('Counter >>> componentDidMount');
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('shouldComponentUpdate >>> ');
+    return nextState.number % 2 === 0;
+  }
+
+  UNSAFE_componentWillUpdate() {
+    console.log('Counter >>> componentWillUpdate');
+  }
+
+  componentDidUpdate() {
+    console.log('Counter >>> componentDidUpdate');
+  }
+}
+
+class ChildCounter extends React.Component {
+  UNSAFE_componentWillReceiveProps(newProps) {
+    console.log('ChildCounter >>> UNSAFE_componentWillReceiveProps');
+  }
+
+  UNSAFE_componentWillMount() {
+    console.log('ChildCounter >>> UNSAFE_componentWillMount');
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('ChildCounter >>> shouldComponentUpdate');
+    return nextProps % 3 === 0;
+  }
+
+  render() {
+    console.log('ChildCounter >>> render');
+    return <div>count: {this.props.count}</div>;
+  }
+
+  componentDidMount() {
+    console.log('ChildCounter >>> componentDidMount');
+  }
+
+  componentWillUnmount() {
+    console.log('ChildCounter >>> componentWillUnmount');
+  }
+}
+
+const element = <Counter />;
 root.render(element);

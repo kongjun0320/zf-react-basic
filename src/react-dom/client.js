@@ -4,6 +4,10 @@ import { addEvent } from './event';
 function mount(vDom, container) {
   const newDOM = createDOM(vDom);
   container.appendChild(newDOM);
+
+  if (newDOM.componentDidMount) {
+    newDOM.componentDidMount();
+  }
 }
 
 function createDOM(vDom) {
@@ -73,10 +77,21 @@ function mountClassComponent(vDom) {
   if (ref) {
     ref.current = classInstance;
   }
+
+  if (classInstance.UNSAFE_componentWillMount) {
+    classInstance.UNSAFE_componentWillMount();
+  }
+
   const renderVDom = classInstance.render();
   // 在获取 render 的渲染结果后把此结果放到 classInstance.oldRenderVDom 上进行暂存
   classInstance.oldRenderVDom = renderVDom;
-  return createDOM(renderVDom);
+  let dom = createDOM(renderVDom);
+
+  if (classInstance.componentDidMount) {
+    dom.componentDidMount = classInstance.componentDidMount.bind(classInstance);
+  }
+
+  return dom;
 }
 
 /**
@@ -115,6 +130,12 @@ export function findDOM(vDom) {
   return vDom.trueDom;
 }
 
+/**
+ * 比较新的和老的虚拟 DOM
+ * @param {*} parentDOM 老的父真实 DOM
+ * @param {*} oldVDom 老的虚拟 DOM
+ * @param {*} newVDom 新的虚拟 DOM
+ */
 export function compareTwoVDom(parentDOM, oldVDom, newVDom) {
   let oldDOM = findDOM(oldVDom);
   let newDOM = createDOM(newVDom);

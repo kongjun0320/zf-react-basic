@@ -86,10 +86,28 @@ class Updater {
 }
 
 function shouldUpdate(classInstance, nextState) {
+  // 是否要更新
+  let willUpdate = true;
+  // 如果 shouldComponentUpdate 存在，并且返回值为 false
+  if (
+    classInstance.shouldComponentUpdate &&
+    !classInstance.shouldComponentUpdate(classInstance.props, nextState)
+  ) {
+    willUpdate = false;
+  }
+
+  // 如果要更新，且 classInstance.UNSAFE_componentWillUpdate 方法存在，就执行
+  if (willUpdate && classInstance.UNSAFE_componentWillUpdate) {
+    classInstance.UNSAFE_componentWillUpdate();
+  }
+
+  // 不管最终要不要更新页面上的组件，都会把新的状态传给 classInstance.state
   // 先把计算得到的心状态，赋给类的实例
   classInstance.state = nextState;
   // 让组件强制更新
-  classInstance.forceUpdate();
+  if (willUpdate) {
+    classInstance.forceUpdate();
+  }
 }
 
 export class Component {
@@ -123,5 +141,9 @@ export class Component {
     // replaceChild div#root -> 新的 div#root
     this.oldRenderVDom = newRenderVDom;
     this.updater.flushCallbacks();
+    // 更新
+    if (this.componentDidUpdate) {
+      this.componentDidUpdate(this.props, this.state);
+    }
   }
 }
