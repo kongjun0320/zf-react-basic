@@ -33,6 +33,7 @@ function createDOM(vDom) {
     if (props.children) {
       // 如果是独生子的话，把独生子的虚拟 DOM 转换成真实 DOM 挂载到父亲上
       if (typeof props.children === 'object' && props.children.type) {
+        props.children.mountIndex = 0;
         mount(props.children, dom);
       } else if (Array.isArray(props.children)) {
         reconcileChildren(props.children, dom);
@@ -50,6 +51,7 @@ function createDOM(vDom) {
 
 function reconcileChildren(childrenVDom, parentDOM) {
   for (let i = 0; i < childrenVDom.length; i++) {
+    childrenVDom[i].mountIndex = i;
     mount(childrenVDom[i], parentDOM);
   }
 }
@@ -261,20 +263,107 @@ function updateChildren(parentDOM, oldVChildren, newVChildren) {
   newVChildren = (
     Array.isArray(newVChildren) ? newVChildren : [newVChildren]
   ).filter(Boolean);
+  // 存放老节点的 map, 属性是所有的老节点的 key，值是老节点的 key 对应的老节点
+  const keyedOldMap = {};
+  // 上一个放置好的，不需要移动元素的索引
+  let lastPlacedIndex = -1;
+  oldVChildren.forEach((oldVChild, index) => {
+    // 如果用户提供了 key，就用用户提供的 key，否则就使用 index 索引
+    let oldKey = oldVChild.key ? oldVChild.key : index;
+    keyedOldMap[oldKey] = oldVChild;
+  });
+  // 创建一个补丁包，存放将要进行的操作
+  let patch = [];
+  // 遍历新的虚拟 DOM 数组
+  newVChildren.forEach((newVChild, index) => {
+    newVChild.mountIndex = index;
+    let newkey = newVChild.key ? newVChild.key : index;
+    // 用新的 key 去老的 Map 中找没有没可复用的虚拟 DOM
+    let oldVChild = keyedOldMap[newkey];
+    // 如果找到了就可以复用
+    if (oldVChild) {
+      // 有就直接进行更新
+      updateElement(oldVChild, newVChild);
+      // 再判断此节点是否需要移动
+      // 如果此可复用的老节点的挂载索引比上一个不需要移动的节点索引要小的话，那就需要移动
+      if (oldVChild.mountIndex < lastPlacedIndex) {
+        // 1 < 4
+        patch.push({
+          type: 'MOVE',
+          oldVChild, // 移动老 B
+          newVChild,
+          mountIndex: index, // 3
+        });
+      }
+      // 把可以复用的老的虚拟 DOM 节点从 map 中删除
+      delete keyedOldMap[newkey];
+      // 更新 lastPlacedIndex
+      lastPlacedIndex = Math.max(lastPlacedIndex, oldVChild.mountIndex);
+    } else {
+      patch.push({
+        type: 'PLACEMENT',
+        newVChild,
+        mountIndex: index,
+      });
+    }
+  });
+  // 执行 patch 中的操作
+  // 获取所有需要移动的元素
+  const moveVChildren = patch
+    .filter((action) => action.type === 'MOVE')
+    .map((action) => action.oldVChild);
+  // 获取所有留在 Map 中的老的虚拟DOM，加上移动的老的虚拟 DOM
+  // 直接从老的真实 DOM 中删除 D F E B
+  Object.values(keyedOldMap)
+    .concat(moveVChildren)
+    .forEach((oldVChild) => {
+      let currentDOM = findDOM(oldVChild);
+      parentDOM.removeChild(currentDOM);
+    });
+  // 插入和移动
+  // [{type: 'MOVE'}, {type: 'PLACEMENT'}]
+  patch.forEach((action) => {
+    const { type, oldVChild, newVChild, mountIndex } = action;
+    // 获取老的真实 DOM 的集合
+    let oldTrueDOMs = parentDOM.childNodes;
+    if (type === 'PLACEMENT') {
+      // 先根据新的虚拟DOM，创建新的真实DOM
+      let newDOM = createDOM(newVChild);
+      const oldTrueDOM = oldTrueDOMs[mountIndex];
+      if (oldTrueDOM) {
+        // 如果要挂载的索引处有真实 DOM，就是插到它的前面
+        parentDOM.insertBefore(newDOM, oldTrueDOM);
+      } else {
+        parentDOM.appendChild(newDOM);
+      }
+    } else if (type === 'MOVE') {
+      // B 的真实 DOM
+      let oldDOM = findDOM(oldVChild);
+      // 获取挂载索引处现在的真实 DOM
+      let oldTrueDOM = oldTrueDOMs[mountIndex];
+      if (oldTrueDOM) {
+        // 如果要挂载的索引处有真实 DOM，就是插到它的前面
+        parentDOM.insertBefore(oldDOM, oldTrueDOM);
+      } else {
+        parentDOM.appendChild(oldDOM);
+      }
+    }
+  });
+
   // 获取两个儿子数组的最大长度
-  let maxLength = Math.max(oldVChildren.length, newVChildren.length);
-  for (let i = 0; i < maxLength; i++) {
-    // 找到下一个不为空
-    let nextVDom = oldVChildren.find(
-      (item, index) => index > i && item && findDOM(item)
-    );
-    compareTwoVDom(
-      parentDOM,
-      oldVChildren[i],
-      newVChildren[i],
-      findDOM(nextVDom)
-    );
-  }
+  // let maxLength = Math.max(oldVChildren.length, newVChildren.length);
+  // for (let i = 0; i < maxLength; i++) {
+  //   // 找到下一个不为空
+  //   let nextVDom = oldVChildren.find(
+  //     (item, index) => index > i && item && findDOM(item)
+  //   );
+  //   compareTwoVDom(
+  //     parentDOM,
+  //     oldVChildren[i],
+  //     newVChildren[i],
+  //     findDOM(nextVDom)
+  //   );
+  // }
 }
 
 function unMountVDom(vDom) {

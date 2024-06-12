@@ -160,86 +160,115 @@ React.createElement(ForwardTextInput, {
 });
 */
 
+// class Counter extends React.Component {
+//   constructor(props) {
+//     super(props);
+
+//     this.state = {
+//       number: 0,
+//     };
+
+//     console.log('Counter >>> constructor');
+//   }
+
+//   handleClick = () => {
+//     this.setState({
+//       number: this.state.number + 1,
+//     });
+//   };
+
+//   UNSAFE_componentWillMount() {
+//     console.log('Counter >>> componentWillMount');
+//   }
+//   render() {
+//     console.log('Counter >>> render');
+//     return (
+//       <div>
+//         <p>number: {this.state.number}</p>
+//         {this.state.number === 4 ? null : (
+//           <FunctionCounter count={this.state.number} />
+//         )}
+//         <button onClick={this.handleClick}>+</button>
+//       </div>
+//     );
+//   }
+
+//   componentDidMount() {
+//     console.log('Counter >>> componentDidMount');
+//   }
+
+//   shouldComponentUpdate(nextProps, nextState) {
+//     console.log('shouldComponentUpdate >>> ');
+//     return nextState.number % 2 === 0;
+//   }
+
+//   UNSAFE_componentWillUpdate() {
+//     console.log('Counter >>> componentWillUpdate');
+//   }
+
+//   componentDidUpdate() {
+//     console.log('Counter >>> componentDidUpdate');
+//   }
+// }
+
+// function FunctionCounter(props) {
+//   return <div>count: {props.count}</div>;
+// }
+
+// class ChildCounter extends React.Component {
+//   UNSAFE_componentWillReceiveProps(newProps) {
+//     console.log('ChildCounter >>> componentWillReceiveProps');
+//   }
+
+//   UNSAFE_componentWillMount() {
+//     console.log('ChildCounter >>> componentWillMount');
+//   }
+
+//   shouldComponentUpdate(nextProps, nextState) {
+//     console.log('ChildCounter >>> shouldComponentUpdate');
+//     return nextProps % 3 === 0;
+//   }
+
+//   render() {
+//     console.log('ChildCounter >>> render');
+//     return <div>count: {this.props.count}</div>;
+//   }
+
+//   componentDidMount() {
+//     console.log('ChildCounter >>> componentDidMount');
+//   }
+
+//   componentWillUnmount() {
+//     console.log('ChildCounter >>> componentWillUnmount');
+//   }
+// }
+
 class Counter extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      number: 0,
+      list: ['A', 'B', 'C', 'D', 'E', 'F'],
     };
-
-    console.log('Counter >>> constructor');
   }
 
   handleClick = () => {
     this.setState({
-      number: this.state.number + 1,
+      list: ['A', 'C', 'E', 'B', 'G'],
     });
   };
 
-  UNSAFE_componentWillMount() {
-    console.log('Counter >>> componentWillMount');
-  }
   render() {
-    console.log('Counter >>> render');
     return (
       <div>
-        <p>number: {this.state.number}</p>
-        {this.state.number === 4 ? null : (
-          <FunctionCounter count={this.state.number} />
-        )}
-        <button onClick={this.handleClick}>+</button>
+        <ul>
+          {this.state.list.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+        <button onClick={this.handleClick}>更新</button>
       </div>
     );
-  }
-
-  componentDidMount() {
-    console.log('Counter >>> componentDidMount');
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log('shouldComponentUpdate >>> ');
-    return nextState.number % 2 === 0;
-  }
-
-  UNSAFE_componentWillUpdate() {
-    console.log('Counter >>> componentWillUpdate');
-  }
-
-  componentDidUpdate() {
-    console.log('Counter >>> componentDidUpdate');
-  }
-}
-
-function FunctionCounter(props) {
-  return <div>count: {props.count}</div>;
-}
-
-class ChildCounter extends React.Component {
-  UNSAFE_componentWillReceiveProps(newProps) {
-    console.log('ChildCounter >>> componentWillReceiveProps');
-  }
-
-  UNSAFE_componentWillMount() {
-    console.log('ChildCounter >>> componentWillMount');
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log('ChildCounter >>> shouldComponentUpdate');
-    return nextProps % 3 === 0;
-  }
-
-  render() {
-    console.log('ChildCounter >>> render');
-    return <div>count: {this.props.count}</div>;
-  }
-
-  componentDidMount() {
-    console.log('ChildCounter >>> componentDidMount');
-  }
-
-  componentWillUnmount() {
-    console.log('ChildCounter >>> componentWillUnmount');
   }
 }
 
