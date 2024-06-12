@@ -41,11 +41,13 @@ class Updater {
     if (typeof callback === 'function') {
       this.callbacks.push(callback);
     }
-    // 准备更新
+    // 准备更新，发射更新有两种，一种是更新属性，一种是更新状态
     this.emitUpdate();
   }
 
-  emitUpdate() {
+  emitUpdate(nextProps) {
+    // 保存传过来的新属性
+    this.nextProps = nextProps;
     // 如果需要批量更新
     if (updateQueue.isBatchingUpdate) {
       // 则不要直接更新组件，而是先把更新器添加到 updaters 里去进行暂存
@@ -57,10 +59,10 @@ class Updater {
 
   updateComponent() {
     // 获取等待生效的状态数组和类的实例
-    const { pendingStates, classInstance } = this;
+    const { pendingStates, classInstance, nextProps } = this;
     // 如果有正在等待生效的状态
-    if (pendingStates.length > 0) {
-      shouldUpdate(classInstance, this.getState());
+    if (nextProps || pendingStates.length > 0) {
+      shouldUpdate(classInstance, nextProps, this.getState());
     }
   }
 
@@ -85,13 +87,13 @@ class Updater {
   }
 }
 
-function shouldUpdate(classInstance, nextState) {
+function shouldUpdate(classInstance, nextProps, nextState) {
   // 是否要更新
   let willUpdate = true;
   // 如果 shouldComponentUpdate 存在，并且返回值为 false
   if (
     classInstance.shouldComponentUpdate &&
-    !classInstance.shouldComponentUpdate(classInstance.props, nextState)
+    !classInstance.shouldComponentUpdate(nextProps, nextState)
   ) {
     willUpdate = false;
   }
@@ -104,6 +106,9 @@ function shouldUpdate(classInstance, nextState) {
   // 不管最终要不要更新页面上的组件，都会把新的状态传给 classInstance.state
   // 先把计算得到的心状态，赋给类的实例
   classInstance.state = nextState;
+  if (nextProps) {
+    classInstance.props = nextProps;
+  }
   // 让组件强制更新
   if (willUpdate) {
     classInstance.forceUpdate();

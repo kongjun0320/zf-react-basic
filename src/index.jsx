@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import React from './react';
+import ReactDOM from './react-dom/client';
 // import { updateQueue } from './Component';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -186,7 +186,7 @@ class Counter extends React.Component {
       <div>
         <p>number: {this.state.number}</p>
         {this.state.number === 4 ? null : (
-          <ChildCounter count={this.state.number} />
+          <FunctionCounter count={this.state.number} />
         )}
         <button onClick={this.handleClick}>+</button>
       </div>
@@ -211,13 +211,17 @@ class Counter extends React.Component {
   }
 }
 
+function FunctionCounter(props) {
+  return <div>count: {props.count}</div>;
+}
+
 class ChildCounter extends React.Component {
   UNSAFE_componentWillReceiveProps(newProps) {
-    console.log('ChildCounter >>> UNSAFE_componentWillReceiveProps');
+    console.log('ChildCounter >>> componentWillReceiveProps');
   }
 
   UNSAFE_componentWillMount() {
-    console.log('ChildCounter >>> UNSAFE_componentWillMount');
+    console.log('ChildCounter >>> componentWillMount');
   }
 
   shouldComponentUpdate(nextProps, nextState) {
