@@ -160,113 +160,113 @@ React.createElement(ForwardTextInput, {
 });
 */
 
-class Counter extends React.Component {
-  constructor(props) {
-    super(props);
+// class Counter extends React.Component {
+//   constructor(props) {
+//     super(props);
 
-    this.state = {
-      number: 0,
-    };
+//     this.state = {
+//       number: 0,
+//     };
 
-    console.log('Counter >>> constructor');
-  }
+//     console.log('Counter >>> constructor');
+//   }
 
-  handleClick = () => {
-    this.setState({
-      number: this.state.number + 1,
-    });
-  };
+//   handleClick = () => {
+//     this.setState({
+//       number: this.state.number + 1,
+//     });
+//   };
 
-  UNSAFE_componentWillMount() {
-    console.log('Counter >>> componentWillMount');
-  }
-  render() {
-    console.log('Counter >>> render');
-    return (
-      <div>
-        <p>number: {this.state.number}</p>
-        <ChildCounter count={this.state.number} />
-        {/* {this.state.number === 4 ? null : (
-          <ChildCounter count={this.state.number} />
-        )} */}
-        <button onClick={this.handleClick}>+</button>
-      </div>
-    );
-  }
+//   UNSAFE_componentWillMount() {
+//     console.log('Counter >>> componentWillMount');
+//   }
+//   render() {
+//     console.log('Counter >>> render');
+//     return (
+//       <div>
+//         <p>number: {this.state.number}</p>
+//         <ChildCounter count={this.state.number} />
+//         {/* {this.state.number === 4 ? null : (
+//           <ChildCounter count={this.state.number} />
+//         )} */}
+//         <button onClick={this.handleClick}>+</button>
+//       </div>
+//     );
+//   }
 
-  componentDidMount() {
-    console.log('Counter >>> componentDidMount');
-  }
+//   componentDidMount() {
+//     console.log('Counter >>> componentDidMount');
+//   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return true;
-    // console.log('shouldComponentUpdate >>> ');
-    // return nextState.number % 2 === 0;
-  }
+//   shouldComponentUpdate(nextProps, nextState) {
+//     return true;
+//     // console.log('shouldComponentUpdate >>> ');
+//     // return nextState.number % 2 === 0;
+//   }
 
-  UNSAFE_componentWillUpdate() {
-    console.log('Counter >>> componentWillUpdate');
-  }
+//   UNSAFE_componentWillUpdate() {
+//     console.log('Counter >>> componentWillUpdate');
+//   }
 
-  componentDidUpdate() {
-    console.log('Counter >>> componentDidUpdate');
-  }
-}
+//   componentDidUpdate() {
+//     console.log('Counter >>> componentDidUpdate');
+//   }
+// }
 
-function FunctionCounter(props) {
-  return <div>count: {props.count}</div>;
-}
+// function FunctionCounter(props) {
+//   return <div>count: {props.count}</div>;
+// }
 
-class ChildCounter extends React.Component {
-  constructor(props) {
-    super(props);
+// class ChildCounter extends React.Component {
+//   constructor(props) {
+//     super(props);
 
-    this.state = {
-      number: 0,
-    };
-  }
+//     this.state = {
+//       number: 0,
+//     };
+//   }
 
-  UNSAFE_componentWillReceiveProps(newProps) {
-    console.log('ChildCounter >>> componentWillReceiveProps');
-  }
+//   UNSAFE_componentWillReceiveProps(newProps) {
+//     console.log('ChildCounter >>> componentWillReceiveProps');
+//   }
 
-  UNSAFE_componentWillMount() {
-    console.log('ChildCounter >>> componentWillMount');
-  }
+//   UNSAFE_componentWillMount() {
+//     console.log('ChildCounter >>> componentWillMount');
+//   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return true;
-    // console.log('ChildCounter >>> shouldComponentUpdate');
-    // return nextProps % 3 === 0;
-  }
+//   shouldComponentUpdate(nextProps, nextState) {
+//     return true;
+//     // console.log('ChildCounter >>> shouldComponentUpdate');
+//     // return nextProps % 3 === 0;
+//   }
 
-  // 通过新的属性派生出状态
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { count } = nextProps;
-    if (count % 2 === 0) {
-      return {
-        number: count * 2,
-      };
-    } else {
-      return {
-        number: count * 3,
-      };
-    }
-  }
+//   // 通过新的属性派生出状态
+//   static getDerivedStateFromProps(nextProps, prevState) {
+//     const { count } = nextProps;
+//     if (count % 2 === 0) {
+//       return {
+//         number: count * 2,
+//       };
+//     } else {
+//       return {
+//         number: count * 3,
+//       };
+//     }
+//   }
 
-  render() {
-    console.log('ChildCounter >>> render');
-    return <div>count: {this.state.number}</div>;
-  }
+//   render() {
+//     console.log('ChildCounter >>> render');
+//     return <div>count: {this.state.number}</div>;
+//   }
 
-  componentDidMount() {
-    console.log('ChildCounter >>> componentDidMount');
-  }
+//   componentDidMount() {
+//     console.log('ChildCounter >>> componentDidMount');
+//   }
 
-  componentWillUnmount() {
-    console.log('ChildCounter >>> componentWillUnmount');
-  }
-}
+//   componentWillUnmount() {
+//     console.log('ChildCounter >>> componentWillUnmount');
+//   }
+// }
 
 // class Counter extends React.Component {
 //   constructor(props) {
@@ -297,5 +297,63 @@ class ChildCounter extends React.Component {
 //   }
 // }
 
-const element = <Counter />;
+class ScrollList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { messages: [] };
+    this.wrapper = React.createRef();
+  }
+
+  addMessage = () => {
+    this.setState((state) => ({
+      messages: [`${state.messages.length}`, ...state.messages],
+    }));
+  };
+
+  componentDidMount() {
+    this.timerID = window.setInterval(() => {
+      this.addMessage();
+    }, 1000);
+  }
+
+  // 在更新前获取真实 DOM 的快照
+  getSnapshotBeforeUpdate() {
+    return {
+      // DOM 更更新前向上卷去的高度
+      prevScrollTop: this.wrapper.current.scrollTop,
+      // DOM 更新前内容的高度
+      prevScrollHeight: this.wrapper.current.scrollHeight,
+    };
+  }
+
+  componentDidUpdate(
+    prevProps,
+    prevState,
+    { prevScrollTop, prevScrollHeight }
+  ) {
+    // 修正向上卷去的高度
+    this.wrapper.current.scrollTop =
+      prevScrollTop + (this.wrapper.current.scrollHeight - prevScrollHeight);
+  }
+
+  render() {
+    const style = {
+      height: '100px',
+      width: '200px',
+      border: '1px solid red',
+      overflow: 'auto',
+    };
+
+    return (
+      <div style={style} ref={this.wrapper}>
+        {this.state.messages.map((message, index) => (
+          <div key={index}>{message}</div>
+        ))}
+      </div>
+    );
+  }
+}
+
+const element = <ScrollList />;
 root.render(element);

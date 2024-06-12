@@ -151,6 +151,10 @@ export class Component {
 
     // 根据新的状态，计算新的虚拟 DOM
     const newRenderVDom = this.render();
+
+    let snapshot =
+      this.getSnapshotBeforeUpdate && this.getSnapshotBeforeUpdate();
+
     // 比较新旧虚拟 DOM 的差异，把更新后的结果放在真实 DOM 上
     compareTwoVDom(oldDOM.parentNode, oldRenderVDom, newRenderVDom);
     // 在更新后，把 oldRenderVDom 更新为 newRenderVDom
@@ -161,7 +165,7 @@ export class Component {
     this.updater.flushCallbacks();
     // 更新
     if (this.componentDidUpdate) {
-      this.componentDidUpdate(this.props, this.state);
+      this.componentDidUpdate(this.props, this.state, snapshot);
     }
   }
 }
