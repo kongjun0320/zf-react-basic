@@ -1,4 +1,9 @@
-import { REACT_ELEMENT, REACT_FORWARD_REF } from './constant';
+import {
+  REACT_CONTEXT,
+  REACT_ELEMENT,
+  REACT_FORWARD_REF,
+  REACT_PROVIDER,
+} from './constant';
 import { wrapToVDom } from './utils';
 import { Component } from './Component';
 
@@ -52,11 +57,29 @@ function forwardRef(render) {
   };
 }
 
+function createContext() {
+  const context = {
+    _currentValue: undefined,
+  };
+
+  context.Provider = {
+    $$typeof: REACT_PROVIDER,
+    _context: context,
+  };
+  context.Consumer = {
+    $$typeof: REACT_CONTEXT,
+    _context: context,
+  };
+
+  return context;
+}
+
 const React = {
   createElement,
   Component,
   createRef,
   forwardRef,
+  createContext,
 };
 
 export default React;

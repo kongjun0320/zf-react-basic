@@ -137,6 +137,10 @@ export class Component {
     // 获取到此组件对应的老的真实 DOM，老的 div
     const oldDOM = findDOM(oldRenderVDom);
 
+    if (this.constructor.contextType) {
+      this.context = this.constructor.contextType._currentValue;
+    }
+
     const { getDerivedStateFromProps } = this.constructor;
     // 可替代掉以前 componentWillReceiveProps
     if (getDerivedStateFromProps) {

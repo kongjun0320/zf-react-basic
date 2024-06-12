@@ -297,63 +297,201 @@ React.createElement(ForwardTextInput, {
 //   }
 // }
 
-class ScrollList extends React.Component {
+// class ScrollList extends React.Component {
+//   constructor(props) {
+//     super(props);
+
+//     this.state = { messages: [] };
+//     this.wrapper = React.createRef();
+//   }
+
+//   addMessage = () => {
+//     this.setState((state) => ({
+//       messages: [`${state.messages.length}`, ...state.messages],
+//     }));
+//   };
+
+//   componentDidMount() {
+//     this.timerID = window.setInterval(() => {
+//       this.addMessage();
+//     }, 1000);
+//   }
+
+//   // 在更新前获取真实 DOM 的快照
+//   getSnapshotBeforeUpdate() {
+//     return {
+//       // DOM 更更新前向上卷去的高度
+//       prevScrollTop: this.wrapper.current.scrollTop,
+//       // DOM 更新前内容的高度
+//       prevScrollHeight: this.wrapper.current.scrollHeight,
+//     };
+//   }
+
+//   componentDidUpdate(
+//     prevProps,
+//     prevState,
+//     { prevScrollTop, prevScrollHeight }
+//   ) {
+//     // 修正向上卷去的高度
+//     this.wrapper.current.scrollTop =
+//       prevScrollTop + (this.wrapper.current.scrollHeight - prevScrollHeight);
+//   }
+
+//   render() {
+//     const style = {
+//       height: '100px',
+//       width: '200px',
+//       border: '1px solid red',
+//       overflow: 'auto',
+//     };
+
+//     return (
+//       <div style={style} ref={this.wrapper}>
+//         {this.state.messages.map((message, index) => (
+//           <div key={index}>{message}</div>
+//         ))}
+//       </div>
+//     );
+//   }
+// }
+
+const ThemeContext = React.createContext();
+console.log('ThemeContext >>> ', ThemeContext);
+const { Provider, Consumer } = ThemeContext;
+
+const basicStyle = {
+  width: '80%',
+  color: 'orange',
+};
+
+class Page extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { messages: [] };
-    this.wrapper = React.createRef();
+    this.state = {
+      color: 'orange',
+    };
   }
 
-  addMessage = () => {
-    this.setState((state) => ({
-      messages: [`${state.messages.length}`, ...state.messages],
-    }));
+  changeColor = (color) => {
+    this.setState({ color });
   };
 
-  componentDidMount() {
-    this.timerID = window.setInterval(() => {
-      this.addMessage();
-    }, 1000);
-  }
-
-  // 在更新前获取真实 DOM 的快照
-  getSnapshotBeforeUpdate() {
-    return {
-      // DOM 更更新前向上卷去的高度
-      prevScrollTop: this.wrapper.current.scrollTop,
-      // DOM 更新前内容的高度
-      prevScrollHeight: this.wrapper.current.scrollHeight,
+  render() {
+    const contextValue = {
+      color: this.state.color,
+      changeColor: this.changeColor,
     };
+    return (
+      <Provider value={contextValue}>
+        <div
+          style={{
+            ...basicStyle,
+            backgroundColor: 'cyan',
+            color: this.state.color,
+          }}
+        >
+          Page
+          <Header />
+          <Main />
+        </div>
+      </Provider>
+    );
   }
+}
 
-  componentDidUpdate(
-    prevProps,
-    prevState,
-    { prevScrollTop, prevScrollHeight }
-  ) {
-    // 修正向上卷去的高度
-    this.wrapper.current.scrollTop =
-      prevScrollTop + (this.wrapper.current.scrollHeight - prevScrollHeight);
-  }
+/*
+
+React.createElement(Provider, {
+  value: contextValue
+});
+
+*/
+
+class Header extends React.Component {
+  static contextType = ThemeContext;
 
   render() {
-    const style = {
-      height: '100px',
-      width: '200px',
-      border: '1px solid red',
-      overflow: 'auto',
-    };
-
     return (
-      <div style={style} ref={this.wrapper}>
-        {this.state.messages.map((message, index) => (
-          <div key={index}>{message}</div>
-        ))}
+      <div
+        style={{
+          ...basicStyle,
+          backgroundColor: 'green',
+          color: this.context.color,
+        }}
+      >
+        Header
+        <Title />
       </div>
     );
   }
 }
 
-const element = <ScrollList />;
+function Title() {
+  return (
+    <Consumer>
+      {(contextValue) => (
+        <div
+          style={{
+            ...basicStyle,
+            backgroundColor: 'pink',
+            color: contextValue.color,
+          }}
+        >
+          Title
+        </div>
+      )}
+    </Consumer>
+  );
+}
+
+/*
+
+React.createElement(Consumer, null, contextValue => React.createElement("div", null, "Title"));
+
+*/
+
+class Main extends React.Component {
+  static contextType = ThemeContext;
+
+  render() {
+    return (
+      <div
+        style={{
+          ...basicStyle,
+          backgroundColor: 'yellow',
+          color: this.context.color,
+        }}
+      >
+        Main
+        <Content />
+      </div>
+    );
+  }
+}
+
+function Content() {
+  return (
+    <Consumer>
+      {(contextValue) => (
+        <div
+          style={{
+            ...basicStyle,
+            backgroundColor: 'blue',
+            color: contextValue.color,
+          }}
+        >
+          Content
+          <button onClick={() => contextValue.changeColor('orange')}>
+            orange
+          </button>
+          <button onClick={() => contextValue.changeColor('red')}>red</button>
+        </div>
+      )}
+    </Consumer>
+  );
+}
+
+const element = <Page />;
+
 root.render(element);
