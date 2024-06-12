@@ -134,10 +134,23 @@ export class Component {
     // 先获取老的虚拟 DOM，再获取新的虚拟 DOM，找到新老虚拟 DOM 的差异，把这些差异更新到真实 DOM 上
     // 获取老的虚拟 DOM，div#counter
     const oldRenderVDom = this.oldRenderVDom;
-    // 根据新的状态，计算新的虚拟 DOM
-    const newRenderVDom = this.render();
     // 获取到此组件对应的老的真实 DOM，老的 div
     const oldDOM = findDOM(oldRenderVDom);
+
+    const { getDerivedStateFromProps } = this.constructor;
+    // 可替代掉以前 componentWillReceiveProps
+    if (getDerivedStateFromProps) {
+      const newState = getDerivedStateFromProps(this.props, this.state);
+      if (newState) {
+        this.state = {
+          ...this.state,
+          ...newState,
+        };
+      }
+    }
+
+    // 根据新的状态，计算新的虚拟 DOM
+    const newRenderVDom = this.render();
     // 比较新旧虚拟 DOM 的差异，把更新后的结果放在真实 DOM 上
     compareTwoVDom(oldDOM.parentNode, oldRenderVDom, newRenderVDom);
     // 在更新后，把 oldRenderVDom 更新为 newRenderVDom
