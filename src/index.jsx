@@ -355,50 +355,50 @@ React.createElement(ForwardTextInput, {
 //   }
 // }
 
-const ThemeContext = React.createContext();
-console.log('ThemeContext >>> ', ThemeContext);
-const { Provider, Consumer } = ThemeContext;
+// const ThemeContext = React.createContext();
+// console.log('ThemeContext >>> ', ThemeContext);
+// const { Provider, Consumer } = ThemeContext;
 
-const basicStyle = {
-  width: '80%',
-  color: 'orange',
-};
+// const basicStyle = {
+//   width: '80%',
+//   color: 'orange',
+// };
 
-class Page extends React.Component {
-  constructor(props) {
-    super(props);
+// class Page extends React.Component {
+//   constructor(props) {
+//     super(props);
 
-    this.state = {
-      color: 'orange',
-    };
-  }
+//     this.state = {
+//       color: 'orange',
+//     };
+//   }
 
-  changeColor = (color) => {
-    this.setState({ color });
-  };
+//   changeColor = (color) => {
+//     this.setState({ color });
+//   };
 
-  render() {
-    const contextValue = {
-      color: this.state.color,
-      changeColor: this.changeColor,
-    };
-    return (
-      <Provider value={contextValue}>
-        <div
-          style={{
-            ...basicStyle,
-            backgroundColor: 'cyan',
-            color: this.state.color,
-          }}
-        >
-          Page
-          <Header />
-          <Main />
-        </div>
-      </Provider>
-    );
-  }
-}
+//   render() {
+//     const contextValue = {
+//       color: this.state.color,
+//       changeColor: this.changeColor,
+//     };
+//     return (
+//       <Provider value={contextValue}>
+//         <div
+//           style={{
+//             ...basicStyle,
+//             backgroundColor: 'cyan',
+//             color: this.state.color,
+//           }}
+//         >
+//           Page
+//           <Header />
+//           <Main />
+//         </div>
+//       </Provider>
+//     );
+//   }
+// }
 
 /*
 
@@ -408,42 +408,42 @@ React.createElement(Provider, {
 
 */
 
-class Header extends React.Component {
-  static contextType = ThemeContext;
+// class Header extends React.Component {
+//   static contextType = ThemeContext;
 
-  render() {
-    return (
-      <div
-        style={{
-          ...basicStyle,
-          backgroundColor: 'green',
-          color: this.context.color,
-        }}
-      >
-        Header
-        <Title />
-      </div>
-    );
-  }
-}
+//   render() {
+//     return (
+//       <div
+//         style={{
+//           ...basicStyle,
+//           backgroundColor: 'green',
+//           color: this.context.color,
+//         }}
+//       >
+//         Header
+//         <Title />
+//       </div>
+//     );
+//   }
+// }
 
-function Title() {
-  return (
-    <Consumer>
-      {(contextValue) => (
-        <div
-          style={{
-            ...basicStyle,
-            backgroundColor: 'pink',
-            color: contextValue.color,
-          }}
-        >
-          Title
-        </div>
-      )}
-    </Consumer>
-  );
-}
+// function Title() {
+//   return (
+//     <Consumer>
+//       {(contextValue) => (
+//         <div
+//           style={{
+//             ...basicStyle,
+//             backgroundColor: 'pink',
+//             color: contextValue.color,
+//           }}
+//         >
+//           Title
+//         </div>
+//       )}
+//     </Consumer>
+//   );
+// }
 
 /*
 
@@ -451,47 +451,76 @@ React.createElement(Consumer, null, contextValue => React.createElement("div", n
 
 */
 
-class Main extends React.Component {
-  static contextType = ThemeContext;
+// class Main extends React.Component {
+//   static contextType = ThemeContext;
 
+//   render() {
+//     return (
+//       <div
+//         style={{
+//           ...basicStyle,
+//           backgroundColor: 'yellow',
+//           color: this.context.color,
+//         }}
+//       >
+//         Main
+//         <Content />
+//       </div>
+//     );
+//   }
+// }
+
+// function Content() {
+//   return (
+//     <Consumer>
+//       {(contextValue) => (
+//         <div
+//           style={{
+//             ...basicStyle,
+//             backgroundColor: 'blue',
+//             color: contextValue.color,
+//           }}
+//         >
+//           Content
+//           <button onClick={() => contextValue.changeColor('orange')}>
+//             orange
+//           </button>
+//           <button onClick={() => contextValue.changeColor('red')}>red</button>
+//         </div>
+//       )}
+//     </Consumer>
+//   );
+// }
+
+function withLoading(OldComponent) {
+  return class extends React.Component {
+    render() {
+      const state = {
+        show: () => {
+          console.log('show >>> ');
+        },
+        hide: () => {
+          console.log('hide >>> ');
+        },
+      };
+      return <OldComponent {...this.props} {...state} />;
+    }
+  };
+}
+
+class Hello extends React.Component {
   render() {
     return (
-      <div
-        style={{
-          ...basicStyle,
-          backgroundColor: 'yellow',
-          color: this.context.color,
-        }}
-      >
-        Main
-        <Content />
+      <div>
+        <p>hello</p>
+        <button onClick={this.props.show}>show</button>
+        <button onClick={this.props.hide}>hide</button>
       </div>
     );
   }
 }
 
-function Content() {
-  return (
-    <Consumer>
-      {(contextValue) => (
-        <div
-          style={{
-            ...basicStyle,
-            backgroundColor: 'blue',
-            color: contextValue.color,
-          }}
-        >
-          Content
-          <button onClick={() => contextValue.changeColor('orange')}>
-            orange
-          </button>
-          <button onClick={() => contextValue.changeColor('red')}>red</button>
-        </div>
-      )}
-    </Consumer>
-  );
-}
-
-const element = <Page />;
+const NewHello = withLoading(Hello);
+const element = <NewHello />;
 
 root.render(element);
