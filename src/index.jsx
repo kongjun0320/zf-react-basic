@@ -1,43 +1,34 @@
-import React from './react';
-import ReactDOM from './react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+const Child = ({ data, handlerClick }) => {
+  console.log('Child >>> ');
+  return <button onClick={handlerClick}>{data.number}</button>;
+};
+
+const MemoChild = React.memo(Child);
+
 function App() {
+  console.log('App >>> ');
+  const [name, setName] = React.useState('aic');
   const [number, setNumber] = React.useState(0);
-  const [number2, setNumber2] = React.useState(0);
-
-  const handleClick = () => {
-    setNumber(number + 100);
-  };
-
-  const handleClick2 = () => {
-    setNumber2(number2 + 30);
-  };
+  const data = React.useMemo(() => {
+    return { number };
+  }, [number]);
+  const handlerClick = React.useCallback(() => setNumber(number + 1), [number]);
 
   return (
     <div>
-      <h1>{number}</h1>
-      <button onClick={handleClick}>+100</button>
-      <button onClick={handleClick2}>+30</button>
+      <input
+        type="text"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+      />
+      <MemoChild data={data} handlerClick={handlerClick} />
     </div>
   );
 }
 
 root.render(<App />);
-
-/**
- 
-function App() {
-  const [number, setNumber] = React.useState(0);
-  const handleClick = () => {
-    setNumber(number + 1);
-  };
-  
-  return React.createElement("div", null, 
-            React.createElement("h1", null, number), 
-              React.createElement("button", {onClick: handleClick}, "+")
-          );
-  }
-
- */

@@ -36,6 +36,46 @@ export function useState(initialState) {
   return [hookStates[hookIndex++], setState];
 }
 
+export function useMemo(factory, deps) {
+  // 第一次挂载的时候，肯定是空的
+  if (hookStates[hookIndex]) {
+    const [lastMemo, lastDeps] = hookStates[hookIndex];
+    const same = deps.every((item, index) => item === lastDeps[index]);
+    // 新的依赖数组和老的依赖数组完全相等
+    if (same) {
+      hookIndex++;
+      return lastMemo;
+    } else {
+      const newMemo = factory();
+      hookStates[hookIndex++] = [newMemo, deps];
+      return newMemo;
+    }
+  } else {
+    const newMemo = factory();
+    hookStates[hookIndex++] = [newMemo, deps];
+    return newMemo;
+  }
+}
+
+export function useCallback(callback, deps) {
+  // 第一次挂载的时候，肯定是空的
+  if (hookStates[hookIndex]) {
+    const [lastCallback, lastDeps] = hookStates[hookIndex];
+    const same = deps.every((item, index) => item === lastDeps[index]);
+    // 新的依赖数组和老的依赖数组完全相等
+    if (same) {
+      hookIndex++;
+      return lastCallback;
+    } else {
+      hookStates[hookIndex++] = [callback, deps];
+      return callback;
+    }
+  } else {
+    hookStates[hookIndex++] = [callback, deps];
+    return callback;
+  }
+}
+
 function createDOM(vDom) {
   const { type, props, ref } = vDom;
   let dom;
