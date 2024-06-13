@@ -1,5 +1,5 @@
-import React from './react';
-import ReactDOM from './react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 // import { updateQueue } from './Component';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -523,57 +523,129 @@ React.createElement(Consumer, null, contextValue => React.createElement("div", n
 // const NewHello = withLoading(Hello);
 // const element = <NewHello />;
 
-class Button extends React.Component {
-  componentDidMount() {
-    console.log('Button componentDidMount >>> ');
-  }
+// class Button extends React.Component {
+//   componentDidMount() {
+//     console.log('Button componentDidMount >>> ');
+//   }
 
+//   constructor(props) {
+//     super(props);
+
+//     this.state = {
+//       name: 'button',
+//     };
+//   }
+
+//   render() {
+//     return <button name={this.state.name}>{this.props.title}</button>;
+//   }
+// }
+
+// function wrapper(OldComponent) {
+//   return class NewComponent extends OldComponent {
+//     constructor(props) {
+//       super(props);
+
+//       this.state = { number: 0 };
+//     }
+
+//     componentDidMount() {
+//       console.log('NewComponent componentDidMount >>> ');
+//       super.componentDidMount();
+//     }
+
+//     handleClick = () => {
+//       this.setState({
+//         number: this.state.number + 1,
+//       });
+//     };
+
+//     render() {
+//       let vDom = super.render();
+//       let newProps = {
+//         ...vDom.props,
+//         ...this.state,
+//         onClick: this.handleClick,
+//       };
+
+//       return React.cloneElement(vDom, newProps, this.state.number);
+//     }
+//   };
+// }
+
+// const NewButton = wrapper(Button);
+
+class MouseTracker extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      name: 'button',
+      x: 0,
+      y: 0,
     };
   }
+
+  handleMouseMove = (event) => {
+    this.setState({
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
 
   render() {
-    return <button name={this.state.name}>{this.props.title}</button>;
+    return (
+      <div
+        style={{ border: '1px solid red' }}
+        onMouseMove={this.handleMouseMove}
+      >
+        {/* {this.props.children(this.state)} */}
+        {this.props.render(this.state)}
+      </div>
+    );
   }
 }
 
-function wrapper(OldComponent) {
-  return class NewComponent extends OldComponent {
-    constructor(props) {
-      super(props);
-
-      this.state = { number: 0 };
-    }
-
-    componentDidMount() {
-      console.log('NewComponent componentDidMount >>> ');
-      super.componentDidMount();
-    }
-
-    handleClick = () => {
-      this.setState({
-        number: this.state.number + 1,
-      });
-    };
-
-    render() {
-      let vDom = super.render();
-      let newProps = {
-        ...vDom.props,
-        ...this.state,
-        onClick: this.handleClick,
-      };
-
-      return React.cloneElement(vDom, newProps, this.state.number);
-    }
-  };
+function FunctionComponent(props) {
+  return props.render({ x: 100, y: 100 });
 }
 
-const NewButton = wrapper(Button);
+const element = (
+  <FunctionComponent
+    render={(value) => (
+      <div>
+        <h1>请移动鼠标</h1>
+        <p>
+          当前的鼠标位置是：{value.x}：{value.y}
+        </p>
+      </div>
+    )}
+  />
+);
 
-const element = <NewButton title="按钮" />;
+// const element = (
+//   <MouseTracker
+//     render={(value) => (
+//       <div>
+//         <h1>请移动鼠标</h1>
+//         <p>
+//           当前的鼠标位置是：{value.x}：{value.y}
+//         </p>
+//       </div>
+//     )}
+//   />
+// );
+
+// const element = (
+//   <MouseTracker>
+//     {(value) => (
+//       <div>
+//         <h1>请移动鼠标</h1>
+//         <p>
+//           当前的鼠标位置是：{value.x}：{value.y}
+//         </p>
+//       </div>
+//     )}
+//   </MouseTracker>
+// );
+
 root.render(element);
