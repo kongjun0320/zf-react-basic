@@ -2,9 +2,10 @@ import {
   REACT_CONTEXT,
   REACT_ELEMENT,
   REACT_FORWARD_REF,
+  REACT_MEMO,
   REACT_PROVIDER,
 } from './constant';
-import { wrapToVDom } from './utils';
+import { shallowEqual, wrapToVDom } from './utils';
 import { Component } from './Component';
 
 /**
@@ -93,9 +94,29 @@ function cloneElement(element, newProps, children) {
   };
 }
 
+class PureComponent extends Component {
+  // 重写 shouldComponentUpdate 方法，如果属性变了或者状态变了就会返回 true，如果都没变才会返回 false
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      !shallowEqual(this.props, nextProps) ||
+      !shallowEqual(this.state, nextState)
+    );
+  }
+}
+
+function memo(FunctionComponent, compare = shallowEqual) {
+  return {
+    $$typeof: REACT_MEMO,
+    type: FunctionComponent,
+    compare,
+  };
+}
+
 const React = {
   createElement,
   Component,
+  PureComponent,
+  memo,
   createRef,
   forwardRef,
   createContext,

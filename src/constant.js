@@ -22,3 +22,8 @@ export const REACT_CONTEXT = Symbol('react.context');
  * 文本类型
  */
 export const REACT_PROVIDER = Symbol('react.provider');
+
+/**
+ * 文本类型
+ */
+export const REACT_MEMO = Symbol('react.memo');

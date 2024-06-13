@@ -1,6 +1,7 @@
 import {
   REACT_CONTEXT,
   REACT_FORWARD_REF,
+  REACT_MEMO,
   REACT_PROVIDER,
   REACT_TEXT,
 } from '../constant';
@@ -18,7 +19,9 @@ function mount(vDom, container) {
 function createDOM(vDom) {
   const { type, props, ref } = vDom;
   let dom;
-  if (type && type.$$typeof === REACT_PROVIDER) {
+  if (type && type.$$typeof === REACT_MEMO) {
+    return mountMemoComponent(vDom);
+  } else if (type && type.$$typeof === REACT_PROVIDER) {
     return mountProviderComponent(vDom);
   } else if (type && type.$$typeof === REACT_CONTEXT) {
     return mountConsumerComponent(vDom);
@@ -57,6 +60,14 @@ function createDOM(vDom) {
   }
   return dom;
 }
+
+function mountMemoComponent(vDom) {
+  const { type, props } = vDom;
+  const renderVDom = type.type(props);
+  vDom.oldRenderVDom = renderVDom;
+  return createDOM(renderVDom);
+}
+
 function mountProviderComponent(vDom) {
   const { type, props } = vDom;
   const context = type._context;
@@ -232,7 +243,9 @@ export function compareTwoVDom(parentDOM, oldVDom, newVDom, nextDOM) {
  */
 function updateElement(oldVDom, newVDom) {
   // 如果新老的虚拟 DOM 都是文本节点的话
-  if (oldVDom.type.$$typeof === REACT_CONTEXT) {
+  if (oldVDom.type.$$typeof === REACT_MEMO) {
+    updateMemoComponent(oldVDom, newVDom);
+  } else if (oldVDom.type.$$typeof === REACT_CONTEXT) {
     updateContextComponent(oldVDom, newVDom);
   } else if (oldVDom.type.$$typeof === REACT_PROVIDER) {
     updateProviderComponent(oldVDom, newVDom);
@@ -256,6 +269,21 @@ function updateElement(oldVDom, newVDom) {
     } else {
       updateFunctionComponent(oldVDom, newVDom);
     }
+  }
+}
+
+function updateMemoComponent(oldVDom, newVDom) {
+  const {
+    type: { compare, type },
+  } = oldVDom;
+  if (compare(oldVDom.props, newVDom.props)) {
+    newVDom.oldRenderVDom = oldVDom.oldRenderVDom;
+  } else {
+    const oldDOM = findDOM(oldVDom);
+    const parentDOM = oldDOM.parentNode;
+    const renderVDom = type(newVDom.props);
+    compareTwoVDom(parentDOM, oldVDom.oldRenderVDom, renderVDom);
+    newVDom.oldRenderVDom = renderVDom;
   }
 }
 
