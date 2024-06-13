@@ -9,10 +9,11 @@ import { addEvent } from './event';
 
 function mount(vDom, container) {
   const newDOM = createDOM(vDom);
-  container.appendChild(newDOM);
-
-  if (newDOM.componentDidMount) {
-    newDOM.componentDidMount();
+  if (newDOM) {
+    container.appendChild(newDOM);
+    if (newDOM.componentDidMount) {
+      newDOM.componentDidMount();
+    }
   }
 }
 
@@ -64,6 +65,11 @@ function createDOM(vDom) {
 function mountMemoComponent(vDom) {
   const { type, props } = vDom;
   const renderVDom = type.type(props);
+
+  if (!renderVDom) {
+    return null;
+  }
+
   vDom.oldRenderVDom = renderVDom;
   return createDOM(renderVDom);
 }
@@ -74,6 +80,11 @@ function mountProviderComponent(vDom) {
   context._currentValue = props.value;
 
   const renderVDom = props.children;
+
+  if (!renderVDom) {
+    return null;
+  }
+
   vDom.oldRenderVDom = renderVDom;
   return createDOM(renderVDom);
 }
@@ -83,6 +94,11 @@ function mountConsumerComponent(vDom) {
   const context = type._context;
 
   const renderVDom = props.children(context._currentValue);
+
+  if (!renderVDom) {
+    return null;
+  }
+
   vDom.oldRenderVDom = renderVDom;
   return createDOM(renderVDom);
 }
@@ -98,6 +114,11 @@ function mountForwardComponent(vDom) {
   const { type, props, ref } = vDom;
   // type.render 就是 forward 函数组件
   const renderVDom = type.render(props, ref);
+
+  if (!renderVDom) {
+    return null;
+  }
+
   // 暂存
   vDom.oldRenderVDom = renderVDom;
   return createDOM(renderVDom);
@@ -106,6 +127,11 @@ function mountForwardComponent(vDom) {
 function mountFunctionComponent(vDom) {
   const { type: FunctionComponent, props } = vDom;
   const renderVDom = FunctionComponent(props);
+
+  if (!renderVDom) {
+    return null;
+  }
+
   // 暂存
   vDom.oldRenderVDom = renderVDom;
   return createDOM(renderVDom);
@@ -130,6 +156,11 @@ function mountClassComponent(vDom) {
   }
 
   const renderVDom = classInstance.render();
+
+  if (!renderVDom) {
+    return null;
+  }
+
   // 在获取 render 的渲染结果后把此结果放到 classInstance.oldRenderVDom 上进行暂存
   classInstance.oldRenderVDom = renderVDom;
   let dom = createDOM(renderVDom);
@@ -493,6 +524,9 @@ function createRoot(container) {
 
 const ReactDOM = {
   createRoot,
+  createPortal: function (vDom, container) {
+    mount(vDom, container);
+  },
 };
 
 export default ReactDOM;

@@ -3,41 +3,28 @@ import ReactDOM from './react-dom/client';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// 如果类组件继承 PureComponent，意味着当属性不变的时候，不重新渲染，跳过更新的逻辑
-class ClassCounter extends React.PureComponent {
+class Dialog extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.dialogElement = document.createElement('div');
+    document.body.appendChild(this.dialogElement);
+  }
+
   render() {
-    console.log('ClassCounter render >>> ');
-    return <div>ClassCounter Count: {this.props.count}</div>;
+    return ReactDOM.createPortal(
+      <div className="dialog">{this.props.children}</div>,
+      this.dialogElement
+    );
   }
 }
 
-function FunctionCounter(props) {
-  console.log('FunctionCounter render >>> ');
-  return <div>FunctionCounter Count: {props.count}</div>;
-}
-
-const MemoFunctionCounter = React.memo(FunctionCounter);
-
 class App extends React.Component {
-  state = {
-    number: 0,
-  };
-  amountRef = React.createRef();
-
-  handleClick = () => {
-    const amount = parseInt(this.amountRef.current.value, 10);
-    this.setState((state) => ({ number: state.number + amount }));
-  };
-
   render() {
-    console.log('App render >>> ');
     return (
       <div>
-        <span>number: {this.state.number}</span>
-        <ClassCounter count={this.state.number} />
-        <MemoFunctionCounter count={this.state.number} />
-        <input type="text" ref={this.amountRef} />
-        <button onClick={this.handleClick}>+</button>
+        <h1>我这里要显示一个模态窗口</h1>
+        <Dialog>我是对话框的内容</Dialog>
       </div>
     );
   }
