@@ -7,7 +7,14 @@ import {
 } from './constant';
 import { shallowEqual, wrapToVDom } from './utils';
 import { Component } from './Component';
-import { useMemo, useState, useCallback, useReducer } from './react-dom/client';
+import {
+  useMemo,
+  useState,
+  useCallback,
+  useReducer,
+  useContext,
+  useEffect,
+} from './react-dom/client';
 
 /**
  * 根据参数返回一个 React 元素
@@ -125,6 +132,8 @@ const React = {
   useState,
   useCallback,
   useReducer,
+  useContext,
+  useEffect,
   useMemo,
 };
 

@@ -95,6 +95,34 @@ export function useReducer(reducer, initialState) {
   return [hookStates[hookIndex++], dispatch];
 }
 
+export function useContext(context) {
+  return context._currentValue;
+}
+
+export function useEffect(callback, deps) {
+  const currentIndex = hookIndex;
+  if (hookStates[hookIndex]) {
+    const [destroy, lastDeps] = hookStates[hookIndex];
+    const same = deps && deps.every((item, index) => item === lastDeps[index]);
+    if (same) {
+      hookIndex++;
+    } else {
+      destroy && destroy();
+      setTimeout(() => {
+        // 执行 callback，保存返回的 destroy 销毁函数
+        hookStates[currentIndex] = [callback(), deps];
+      });
+      hookIndex++;
+    }
+  } else {
+    setTimeout(() => {
+      // 执行 callback，保存返回的 destroy 销毁函数
+      hookStates[currentIndex] = [callback(), deps];
+    });
+    hookIndex++;
+  }
+}
+
 function createDOM(vDom) {
   const { type, props, ref } = vDom;
   let dom;

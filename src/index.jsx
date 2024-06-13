@@ -3,31 +3,20 @@ import ReactDOM from './react-dom/client';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-function reducer(state = { number: 0 }, action) {
-  switch (action.type) {
-    case 'ADD':
-      return {
-        number: state.number + 1,
-      };
-    case 'MINUS':
-      return {
-        number: state.number - 1,
-      };
-    default:
-      return state;
-  }
-}
-
 function Counter() {
-  const [state, dispatch] = React.useReducer(reducer, { number: 0 });
+  const [number, setNumber] = React.useState(0);
 
-  return (
-    <div>
-      <p>{state.number}</p>
-      <button onClick={() => dispatch({ type: 'ADD' })}>+</button>
-      <button onClick={() => dispatch({ type: 'MINUS' })}>-</button>
-    </div>
-  );
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setNumber((n) => n + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  });
+
+  return <div>{number}</div>;
 }
 
 root.render(<Counter />);
