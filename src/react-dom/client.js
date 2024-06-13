@@ -17,6 +17,25 @@ function mount(vDom, container) {
   }
 }
 
+let hookStates = [];
+let hookIndex = 0;
+
+let scheduleUpdate;
+
+export function useState(initialState) {
+  const oldState = (hookStates[hookIndex] =
+    hookStates[hookIndex] || initialState);
+  const currentIndex = hookIndex;
+
+  function setState(action) {
+    let newState = typeof action === 'function' ? action(oldState) : action;
+    hookStates[currentIndex] = newState;
+    scheduleUpdate();
+  }
+
+  return [hookStates[hookIndex++], setState];
+}
+
 function createDOM(vDom) {
   const { type, props, ref } = vDom;
   let dom;
@@ -515,6 +534,11 @@ class DOMRoot {
 
   render(vDom) {
     mount(vDom, this.container);
+
+    scheduleUpdate = () => {
+      hookIndex = 0;
+      compareTwoVDom(this.container, vDom, vDom);
+    };
   }
 }
 

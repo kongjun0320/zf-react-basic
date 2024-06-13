@@ -7,6 +7,7 @@ import {
 } from './constant';
 import { shallowEqual, wrapToVDom } from './utils';
 import { Component } from './Component';
+import { useState } from './react-dom/client';
 
 /**
  * 根据参数返回一个 React 元素
@@ -121,6 +122,7 @@ const React = {
   forwardRef,
   createContext,
   cloneElement,
+  useState,
 };
 
 export default React;

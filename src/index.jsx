@@ -3,31 +3,41 @@ import ReactDOM from './react-dom/client';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-class Dialog extends React.Component {
-  constructor(props) {
-    super(props);
+function App() {
+  const [number, setNumber] = React.useState(0);
+  const [number2, setNumber2] = React.useState(0);
 
-    this.dialogElement = document.createElement('div');
-    document.body.appendChild(this.dialogElement);
-  }
+  const handleClick = () => {
+    setNumber(number + 100);
+  };
 
-  render() {
-    return ReactDOM.createPortal(
-      <div className="dialog">{this.props.children}</div>,
-      this.dialogElement
-    );
-  }
-}
+  const handleClick2 = () => {
+    setNumber2(number2 + 30);
+  };
 
-class App extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>我这里要显示一个模态窗口</h1>
-        <Dialog>我是对话框的内容</Dialog>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <h1>{number}</h1>
+      <button onClick={handleClick}>+100</button>
+      <button onClick={handleClick2}>+30</button>
+    </div>
+  );
 }
 
 root.render(<App />);
+
+/**
+ 
+function App() {
+  const [number, setNumber] = React.useState(0);
+  const handleClick = () => {
+    setNumber(number + 1);
+  };
+  
+  return React.createElement("div", null, 
+            React.createElement("h1", null, number), 
+              React.createElement("button", {onClick: handleClick}, "+")
+          );
+  }
+
+ */
