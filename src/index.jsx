@@ -492,35 +492,88 @@ React.createElement(Consumer, null, contextValue => React.createElement("div", n
 //   );
 // }
 
-function withLoading(OldComponent) {
-  return class extends React.Component {
+// function withLoading(OldComponent) {
+//   return class extends React.Component {
+//     render() {
+//       const state = {
+//         show: () => {
+//           console.log('show >>> ');
+//         },
+//         hide: () => {
+//           console.log('hide >>> ');
+//         },
+//       };
+//       return <OldComponent {...this.props} {...state} />;
+//     }
+//   };
+// }
+
+// class Hello extends React.Component {
+//   render() {
+//     return (
+//       <div>
+//         <p>hello</p>
+//         <button onClick={this.props.show}>show</button>
+//         <button onClick={this.props.hide}>hide</button>
+//       </div>
+//     );
+//   }
+// }
+
+// const NewHello = withLoading(Hello);
+// const element = <NewHello />;
+
+class Button extends React.Component {
+  componentDidMount() {
+    console.log('Button componentDidMount >>> ');
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: 'button',
+    };
+  }
+
+  render() {
+    return <button name={this.state.name}>{this.props.title}</button>;
+  }
+}
+
+function wrapper(OldComponent) {
+  return class NewComponent extends OldComponent {
+    constructor(props) {
+      super(props);
+
+      this.state = { number: 0 };
+    }
+
+    componentDidMount() {
+      console.log('NewComponent componentDidMount >>> ');
+      super.componentDidMount();
+    }
+
+    handleClick = () => {
+      this.setState({
+        number: this.state.number + 1,
+      });
+    };
+
     render() {
-      const state = {
-        show: () => {
-          console.log('show >>> ');
-        },
-        hide: () => {
-          console.log('hide >>> ');
-        },
+      let vDom = super.render();
+      let newProps = {
+        ...vDom.props,
+        ...this.state,
+        onClick: this.handleClick,
       };
-      return <OldComponent {...this.props} {...state} />;
+
+      return React.cloneElement(vDom, newProps, this.state.number);
     }
   };
 }
 
-class Hello extends React.Component {
-  render() {
-    return (
-      <div>
-        <p>hello</p>
-        <button onClick={this.props.show}>show</button>
-        <button onClick={this.props.hide}>hide</button>
-      </div>
-    );
-  }
-}
+const NewButton = wrapper(Button);
 
-const NewHello = withLoading(Hello);
-const element = <NewHello />;
-
+const element = <NewButton title="按钮" />;
 root.render(element);

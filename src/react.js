@@ -74,12 +74,32 @@ function createContext() {
   return context;
 }
 
+function cloneElement(element, newProps, children) {
+  let props = {
+    ...element.props,
+    ...newProps,
+  };
+
+  if (arguments.length > 3) {
+    props.children = Array.prototype.slice.call(arguments, 2).map(wrapToVDom);
+  } else if (arguments.length === 3) {
+    // 如果等于 3，只有一个儿子
+    props.children = wrapToVDom(children);
+  }
+
+  return {
+    ...element,
+    props,
+  };
+}
+
 const React = {
   createElement,
   Component,
   createRef,
   forwardRef,
   createContext,
+  cloneElement,
 };
 
 export default React;
