@@ -23,17 +23,18 @@ let hookIndex = 0;
 let scheduleUpdate;
 
 export function useState(initialState) {
-  const oldState = (hookStates[hookIndex] =
-    hookStates[hookIndex] || initialState);
-  const currentIndex = hookIndex;
+  return useReducer(null, initialState);
+  // const oldState = (hookStates[hookIndex] =
+  //   hookStates[hookIndex] || initialState);
+  // const currentIndex = hookIndex;
 
-  function setState(action) {
-    let newState = typeof action === 'function' ? action(oldState) : action;
-    hookStates[currentIndex] = newState;
-    scheduleUpdate();
-  }
+  // function setState(action) {
+  //   let newState = typeof action === 'function' ? action(oldState) : action;
+  //   hookStates[currentIndex] = newState;
+  //   scheduleUpdate();
+  // }
 
-  return [hookStates[hookIndex++], setState];
+  // return [hookStates[hookIndex++], setState];
 }
 
 export function useMemo(factory, deps) {
@@ -74,6 +75,24 @@ export function useCallback(callback, deps) {
     hookStates[hookIndex++] = [callback, deps];
     return callback;
   }
+}
+
+export function useReducer(reducer, initialState) {
+  const oldState = (hookStates[hookIndex] =
+    hookStates[hookIndex] || initialState);
+  const currentIndex = hookIndex;
+
+  function dispatch(action) {
+    let newState = reducer
+      ? reducer(oldState, action)
+      : typeof action === 'function'
+      ? action(oldState)
+      : action;
+    hookStates[currentIndex] = newState;
+    scheduleUpdate();
+  }
+
+  return [hookStates[hookIndex++], dispatch];
 }
 
 function createDOM(vDom) {
