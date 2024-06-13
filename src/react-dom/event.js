@@ -12,7 +12,7 @@ export function addEvent(dom, eventType, handler) {
   // 向 store 中存放属性和值，属性是事件类型 onclick，值是一个事件处理函数
   store[eventType.toLowerCase()] = handler;
   const eventName = eventType.slice(2).toLowerCase();
-  if (!document.bound) {
+  if (!document[eventName]) {
     document.addEventListener(
       eventName,
       (event) => {
@@ -27,7 +27,7 @@ export function addEvent(dom, eventType, handler) {
       },
       false
     );
-    document.bound = true;
+    document[eventName] = true;
     // document.addEventListener('click', dispatchEvent, true);
     // document.addEventListener('click', dispatchEvent, false);
     // document[eventType.toLowerCase()] = dispatchEvent;
