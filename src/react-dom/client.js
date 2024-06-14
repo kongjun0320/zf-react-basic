@@ -155,6 +155,10 @@ export function useRef(initialState) {
   return hookStates[hookIndex++];
 }
 
+export function useImperativeHandle(ref, handler) {
+  ref.current = handler();
+}
+
 function createDOM(vDom) {
   const { type, props, ref } = vDom;
   let dom;

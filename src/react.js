@@ -16,6 +16,7 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
+  useImperativeHandle,
 } from './react-dom/client';
 
 /**
@@ -139,6 +140,7 @@ const React = {
   useMemo,
   useLayoutEffect,
   useRef,
+  useImperativeHandle,
 };
 
 export default React;
