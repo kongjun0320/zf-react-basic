@@ -14,6 +14,8 @@ import {
   useReducer,
   useContext,
   useEffect,
+  useLayoutEffect,
+  useRef,
 } from './react-dom/client';
 
 /**
@@ -135,6 +137,8 @@ const React = {
   useContext,
   useEffect,
   useMemo,
+  useLayoutEffect,
+  useRef,
 };
 
 export default React;

@@ -123,6 +123,38 @@ export function useEffect(callback, deps) {
   }
 }
 
+export function useLayoutEffect(callback, deps) {
+  const currentIndex = hookIndex;
+  if (hookStates[hookIndex]) {
+    const [destroy, lastDeps] = hookStates[hookIndex];
+    const same = deps && deps.every((item, index) => item === lastDeps[index]);
+    if (same) {
+      hookIndex++;
+    } else {
+      destroy && destroy();
+      queueMicrotask(() => {
+        // 执行 callback，保存返回的 destroy 销毁函数
+        hookStates[currentIndex] = [callback(), deps];
+      });
+      hookIndex++;
+    }
+  } else {
+    queueMicrotask(() => {
+      // 执行 callback，保存返回的 destroy 销毁函数
+      hookStates[currentIndex] = [callback(), deps];
+    });
+    hookIndex++;
+  }
+}
+
+export function useRef(initialState) {
+  hookStates[hookIndex] = hookStates[hookIndex] || {
+    current: initialState,
+  };
+
+  return hookStates[hookIndex++];
+}
+
 function createDOM(vDom) {
   const { type, props, ref } = vDom;
   let dom;

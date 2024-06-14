@@ -3,20 +3,22 @@ import ReactDOM from './react-dom/client';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-function Counter() {
-  const [number, setNumber] = React.useState(0);
+function Animation() {
+  const ref = React.useRef();
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setNumber((n) => n + 1);
-    }, 1000);
+  React.useLayoutEffect(() => {
+    ref.current.style.transform = `translate(500px)`;
+    ref.current.style.transition = `all 500ms`;
+  }, []);
 
-    return () => {
-      clearInterval(timer);
-    };
-  });
+  const styleObj = {
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
+    backgroundColor: 'red',
+  };
 
-  return <div>{number}</div>;
+  return <div style={styleObj} ref={ref}></div>;
 }
 
-root.render(<Counter />);
+root.render(<Animation />);
