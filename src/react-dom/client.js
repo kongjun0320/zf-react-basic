@@ -416,7 +416,9 @@ export function compareTwoVDom(parentDOM, oldVDom, newVDom, nextDOM) {
  */
 function updateElement(oldVDom, newVDom) {
   // 如果新老的虚拟 DOM 都是文本节点的话
-  if (oldVDom.type.$$typeof === REACT_MEMO) {
+  if (oldVDom.type.$$typeof === REACT_FORWARD_REF) {
+    updateForwardComponent(oldVDom, newVDom);
+  } else if (oldVDom.type.$$typeof === REACT_MEMO) {
     updateMemoComponent(oldVDom, newVDom);
   } else if (oldVDom.type.$$typeof === REACT_CONTEXT) {
     updateContextComponent(oldVDom, newVDom);
@@ -443,6 +445,22 @@ function updateElement(oldVDom, newVDom) {
       updateFunctionComponent(oldVDom, newVDom);
     }
   }
+}
+
+function updateForwardComponent(oldVDom, newVDom) {
+  let currentDOM = findDOM(oldVDom);
+  if (!currentDOM) {
+    return;
+  }
+  // 获取当前的真实 DOM 节点
+  let parentDOM = currentDOM.parentNode;
+  // 重新执行函数获取新的虚拟 DOM
+  const { type, props, ref } = newVDom;
+  const newRenderVDom = type.render(props, ref);
+  // 比较新旧虚拟 DOM
+  compareTwoVDom(parentDOM, oldVDom.oldRenderVDom, newRenderVDom);
+  // 还要把 newRenderVDom 保存起来
+  newVDom.oldRenderVDom = newRenderVDom;
 }
 
 function updateMemoComponent(oldVDom, newVDom) {

@@ -3,41 +3,28 @@ import ReactDOM from './react-dom/client';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-function Child(props, forwardRef) {
-  const inputRef = React.useRef(null);
-
-  React.useImperativeHandle(forwardRef, () => ({
-    getFocus() {
-      inputRef.current?.focus();
-    },
-  }));
-
-  return <input type="text" ref={inputRef} />;
-}
-
-const ForwardChild = React.forwardRef(Child);
-
-function Parent() {
+function Counter() {
   const [number, setNumber] = React.useState(0);
-  const inputRef = React.useRef(null);
-  const getFocus = () => {
-    inputRef.current?.getFocus();
+  const numberRef = React.useRef(number);
+
+  const handleClick = () => {
+    const nextNumber = number + 1;
+    setNumber(nextNumber);
+    numberRef.current = nextNumber;
   };
+
+  const handleShowNumber = React.useCallback(() => {
+    console.log('number >>> ', number);
+    console.log('numberRef >>> ', numberRef.current);
+  }, []);
 
   return (
     <div>
-      <ForwardChild ref={inputRef} />
-      <button onClick={getFocus}>获取焦点</button>
       <p>{number}</p>
-      <button
-        onClick={() => {
-          setNumber(number + 1);
-        }}
-      >
-        +
-      </button>
+      <button onClick={handleClick}>+</button>
+      <button onClick={handleShowNumber}>Show Number</button>
     </div>
   );
 }
 
-root.render(<Parent />);
+root.render(<Counter />);
